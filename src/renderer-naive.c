@@ -1,4 +1,5 @@
 #include "renderer-naive.h"
+#include <stdio.h>
 
 #include "constants.h"
 
@@ -10,22 +11,21 @@ void render_mandelbrot_naive(SDL_Renderer* rndr, float scale_factor) {
 
       float p_re = 0, p_im = 0;
 
-      float p_re_prev = p0_re, p_im_prev = p0_im;
-
       int iter = 0;
       // (a + i*b)*(a + i*b) = a^2 - b^2 + i*(2ab)
       for (; iter < kMandelMaxIter; ++iter) {
-        p_re = p_re_prev * p_re_prev - p_im_prev * p_im_prev + p0_re;
-        p_im = 2 * p_re_prev * p_im_prev + p0_im;
+        float p_re_sq = p_re * p_re;
+        float p_im_sq = p_im * p_im;
 
-        if (p_re * p_re + p_im * p_im > 10) break;
+        p_im = 2 * p_im * p_re + p0_im;
+        p_re = p_re_sq - p_im_sq + p0_re;
 
-        p_re_prev = p_re;
-        p_im_prev = p_im;
+        if (p_re * p_re + p_im * p_im > 4) break;
       }
 
-      SDL_SetRenderDrawColor(rndr, iter, iter, iter, SDL_ALPHA_OPAQUE);
-      SDL_RenderPoint(rndr, p_x, p_y);
+      // SDL_SetRenderDrawColor(rndr, iter, iter, iter, SDL_ALPHA_OPAQUE);
+      // SDL_RenderPoint(rndr, p_x, p_y);
+      printf(NULL, "%d", iter);
     }
   }
 }

@@ -12,6 +12,7 @@
 
 #include "renderer-naive.h"
 #include "renderer-arrays.h"
+#include "renderer-intrinsic.h"
 #include "constants.h"
 
 typedef struct AppDataS {
@@ -70,9 +71,10 @@ int main(int argc, char* args[]) {
 
     uint64_t last_ticks = SDL_GetTicks();
 
-    render_mandelbrot_arrays(gAppData.rndr, gAppData.scale_factor);
+    render_mandelbrot_naive(gAppData.rndr, gAppData.scale_factor);
 
     const float fps = 1000 / ((float)(SDL_GetTicks() - last_ticks));
+    SDL_Log("%f", fps);
     SDL_SetRenderDrawColor(gAppData.rndr, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderDebugTextFormat(gAppData.rndr, 10, 10, "FPS: %.1f", fps);
 
