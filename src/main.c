@@ -49,6 +49,14 @@ int main(int argc, char* args[]) {
     return EXIT_FAILURE;
   }
 
+#if   defined VERSION_NAIVE
+    SDL_Log("Running naive version");
+#elif defined VERSION_ARRAYS
+    SDL_Log("Running array version");
+#else
+    SDL_Log("Running intrinsic version");
+#endif
+
   SDL_Surface* surface = NULL;
   SDL_Event    event;
   bool         quit = false;
@@ -83,7 +91,15 @@ int main(int argc, char* args[]) {
     uint64_t last_ticks = SDL_GetTicks();
 
     if(SDL_LockTextureToSurface(app_data.tex, NULL, &surface)) {
+
+#if   defined VERSION_NAIVE
       render_mandelbrot_naive(surface, app_data.scale_factor);
+#elif defined VERSION_ARRAYS
+      render_mandelbrot_arrays(surface, app_data.scale_factor);
+#else
+      render_mandelbrot_intrinsic(surface, app_data.scale_factor);
+#endif
+
       SDL_UnlockTexture(app_data.tex);
     }
     else {
