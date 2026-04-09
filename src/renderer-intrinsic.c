@@ -4,16 +4,16 @@
 #include "constants.h"
 #include "immintrin.h"
 
-void render_mandelbrot_intrinsic(SDL_Surface* surface, float scale_factor) {
+void render_mandelbrot_intrinsic(SDL_Surface* surface, Transform tr) {
 
-  __m256 sc_fac    = _mm256_set1_ps(scale_factor);
+  __m256 sc_fac    = _mm256_set1_ps(tr.scale_factor);
   __m256 p0_re_inc = _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
   __m256 const_2   = _mm256_set1_ps(2.f);
 
   for (float p_y = 0; p_y < kWindowHeight; p_y++) {
     for (float p_x = 0; p_x < kWindowWidth; p_x += 8) {
-      __m256 p0_re = _mm256_set1_ps(p_x - kXOffset);
-      __m256 p0_im = _mm256_set1_ps(kYOffset - p_y);
+      __m256 p0_re = _mm256_set1_ps(p_x - kXOffset + tr.origin_x);
+      __m256 p0_im = _mm256_set1_ps(kYOffset - p_y + tr.origin_y);
 
       p0_re = _mm256_add_ps(p0_re, p0_re_inc);
       p0_re = _mm256_div_ps(p0_re, sc_fac);

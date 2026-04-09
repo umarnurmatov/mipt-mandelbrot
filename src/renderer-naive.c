@@ -1,17 +1,15 @@
 #include "renderer-naive.h"
 
 #include <SDL3/SDL_pixels.h>
-#include <stdio.h>
-
 #include <SDL3/SDL_surface.h>
 
 #include "constants.h"
 
-void render_mandelbrot_naive(SDL_Surface* surface, float scale_factor) {
+void render_mandelbrot_naive(SDL_Surface* surface, Transform tr) {
   for (float p_y = 0; p_y < kWindowHeight; p_y++) {
     for (float p_x = 0; p_x < kWindowWidth; p_x++) {
-      float p0_re = (p_x - kXOffset) / scale_factor,
-            p0_im = (kYOffset - p_y) / scale_factor;
+      float p0_re = (p_x - kXOffset + tr.origin_x) / tr.scale_factor,
+            p0_im = (kYOffset - p_y + tr.origin_y) / tr.scale_factor;
 
       float p_re = 0, p_im = 0;
 
@@ -27,7 +25,8 @@ void render_mandelbrot_naive(SDL_Surface* surface, float scale_factor) {
         if (p_re * p_re + p_im * p_im > 4) break;
       }
 
-      SDL_WriteSurfacePixel(surface, p_x, p_y, iter, iter, iter, SDL_ALPHA_OPAQUE);
+      SDL_WriteSurfacePixel(surface, p_x, p_y, iter, iter, iter,
+                            SDL_ALPHA_OPAQUE);
     }
   }
 }

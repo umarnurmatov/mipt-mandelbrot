@@ -14,17 +14,18 @@
 #include "renderer-arrays.h"
 #include "renderer-intrinsic.h"
 #include "constants.h"
+#include "transform.h"
 
 typedef struct AppDataS {
   SDL_Window*   win;
   SDL_Renderer* rndr;
-  float         scale_factor;
+  Transform     tr;
   SDL_Texture*  tex;
 
 } AppDataT;
 
 int main(int argc, char* args[]) {
-  AppDataT app_data = {NULL, NULL, kDefaultScaleFactor};
+  AppDataT app_data = {NULL, NULL, { 0, 0, kDefaultScaleFactor }, NULL};
 
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("Failed initializing SDL: %s\n", SDL_GetError());
@@ -74,10 +75,22 @@ int main(int argc, char* args[]) {
       else if (event.type == SDL_EVENT_KEY_DOWN) {
         switch (event.key.scancode) {
           case SDL_SCANCODE_EQUALS:
-            app_data.scale_factor += kScaleFactorDelta;
+            app_data.tr.scale_factor += kScaleFactorDelta;
             break;
           case SDL_SCANCODE_MINUS:
-            app_data.scale_factor -= kScaleFactorDelta;
+            app_data.tr.scale_factor -= kScaleFactorDelta;
+            break;
+          case SDL_SCANCODE_W:
+            app_data.tr.origin_y     += kOriginDelta;
+            break;
+          case SDL_SCANCODE_S:
+            app_data.tr.origin_y     -= kOriginDelta;
+            break;
+          case SDL_SCANCODE_D:
+            app_data.tr.origin_x     += kOriginDelta;
+            break;
+          case SDL_SCANCODE_A:
+            app_data.tr.origin_x     -= kOriginDelta;
             break;
           case SDL_SCANCODE_Q:
             quit = true;
@@ -93,11 +106,11 @@ int main(int argc, char* args[]) {
     if(SDL_LockTextureToSurface(app_data.tex, NULL, &surface)) {
 
 #if   defined VERSION_NAIVE
-      render_mandelbrot_naive(surface, app_data.scale_factor);
+      render_mandelbrot_naive(surface, app_data.tr);
 #elif defined VERSION_ARRAYS
-      render_mandelbrot_arrays(surface, app_data.scale_factor);
+      render_mandelbrot_arrays(surface, app_data.tr);
 #else
-      render_mandelbrot_intrinsic(surface, app_data.scale_factor);
+      render_mandelbrot_intrinsic(surface, app_data.tr);
 #endif
 
       SDL_UnlockTexture(app_data.tex);

@@ -24,15 +24,15 @@ inline m256 mm256_set_ps(float e7, float e6, float e5, float e4, float e3,
 
 inline m256 mm256_div_ps(m256 a, m256 b) __attribute__((always_inline));
 
-void render_mandelbrot_arrays(SDL_Surface* surface, float scale_factor) {
-  m256 sc_fac    = mm256_set1_ps(scale_factor);
+void render_mandelbrot_arrays(SDL_Surface* surface, Transform tr) {
+  m256 sc_fac    = mm256_set1_ps(tr.scale_factor);
   m256 p0_re_inc = mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
   m256 const_2   = mm256_set1_ps(2.f);
 
   for (float p_y = 0; p_y < kWindowHeight; p_y++) {
     for (float p_x = 0; p_x < kWindowWidth; p_x += 8) {
-      m256 p0_re = mm256_set1_ps(p_x - kXOffset);
-      m256 p0_im = mm256_set1_ps(kYOffset - p_y);
+      m256 p0_re = mm256_set1_ps(p_x - kXOffset + tr.origin_x);
+      m256 p0_im = mm256_set1_ps(kYOffset - p_y + tr.origin_y);
 
       p0_re = mm256_add_ps(p0_re, p0_re_inc);
       p0_re = mm256_div_ps(p0_re, sc_fac);
