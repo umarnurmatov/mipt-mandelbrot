@@ -4,7 +4,7 @@
 #include "constants.h"
 #include "immintrin.h"
 
-void render_mandelbrot_intrinsic(SDL_Renderer* rndr, float scale_factor) {
+void render_mandelbrot_intrinsic(SDL_Surface* surface, float scale_factor) {
 
   __m256 sc_fac    = _mm256_set1_ps(scale_factor);
   __m256 p0_re_inc = _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
@@ -49,11 +49,9 @@ void render_mandelbrot_intrinsic(SDL_Renderer* rndr, float scale_factor) {
         }
       }
 
-      for(int i = 0; i < 8; ++i) {
-        // SDL_SetRenderDrawColor(rndr, p_iter[i], p_iter[i], p_iter[i], SDL_ALPHA_OPAQUE);
-        // SDL_RenderPoint(rndr, p_x+i, p_y);
-        printf(NULL, "%d", p_iter[i]);
-      }
+      for(int i = 0; i < 8; ++i)
+        SDL_WriteSurfacePixel(surface, p_x+i, p_y, p_iter[i], p_iter[i],
+                              p_iter[i], SDL_ALPHA_OPAQUE);
     }
   }
 }

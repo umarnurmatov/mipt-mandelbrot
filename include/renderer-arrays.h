@@ -1,5 +1,5 @@
 #pragma once
 
-#include "SDL3/SDL_render.h"
+#include "SDL3/SDL_surface.h"
 
-void render_mandelbrot_arrays(SDL_Renderer* rndr, float scale_factor);
+void render_mandelbrot_arrays(SDL_Surface* surface, float scale_factor);

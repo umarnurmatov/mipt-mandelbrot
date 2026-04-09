@@ -1,7 +1,8 @@
 #include "renderer-arrays.h"
-#include <stdio.h>
 
-#include "SDL3/SDL.h"
+#include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_surface.h>
+
 #include "constants.h"
 
 typedef struct {
@@ -23,7 +24,7 @@ inline m256 mm256_set_ps(float e7, float e6, float e5, float e4, float e3,
 
 inline m256 mm256_div_ps(m256 a, m256 b) __attribute__((always_inline));
 
-void render_mandelbrot_arrays(SDL_Renderer* rndr, float scale_factor) {
+void render_mandelbrot_arrays(SDL_Surface* surface, float scale_factor) {
   m256 sc_fac    = mm256_set1_ps(scale_factor);
   m256 p0_re_inc = mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
   m256 const_2   = mm256_set1_ps(2.f);
@@ -67,12 +68,9 @@ void render_mandelbrot_arrays(SDL_Renderer* rndr, float scale_factor) {
         }
       }
 
-      for (int i = 0; i < 8; ++i) {
-        // SDL_SetRenderDrawColor(rndr, p_iter[i], p_iter[i], p_iter[i],
-        //                        SDL_ALPHA_OPAQUE);
-        // SDL_RenderPoint(rndr, p_x + i, p_y);
-        printf(NULL, "%d", p_iter[i]);
-      }
+      for (int i = 0; i < 8; ++i)
+        SDL_WriteSurfacePixel(surface, p_x+i, p_y, p_iter[i], p_iter[i],
+                              p_iter[i], SDL_ALPHA_OPAQUE);
     }
   }
 }
