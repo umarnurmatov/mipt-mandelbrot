@@ -72,3 +72,6 @@ log/
 compile_commands.json
 bench.json
 out.json
+
+# Perf output
+perf.data*
