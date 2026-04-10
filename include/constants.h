@@ -3,7 +3,7 @@
 static const char* kAppName            = "mandelbrot";
 static const int   kWindowWidth        = 800;
 static const int   kWindowHeight       = 600;
-static const int   kMandelMaxIter      = 100;
+static const int   kMandelMaxIter      = 255;
 static const float kMandelMaxMagnitude = 4.f;
 
 static const float kXOffset            = 550;

@@ -75,3 +75,6 @@ out.json
 
 # Perf output
 perf.data*
+
+# stats
+stats/*
