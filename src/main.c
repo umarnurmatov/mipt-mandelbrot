@@ -26,13 +26,13 @@
 #endif
 
 #if defined VERSION_NAIVE
-  static const char* version_info = "Running naive version";
+static const char* version_info = "Running naive version";
 #define FUNC_RENDERER render_mandelbrot_naive
 #elif defined VERSION_ARRAYS
-  static const char* version_info = "Running array version";
+static const char* version_info = "Running array version";
 #define FUNC_RENDERER render_mandelbrot_arrays
 #else
-  static const char* version_info = "Running intrinsic version";
+static const char* version_info = "Running intrinsic version";
 #define FUNC_RENDERER render_mandelbrot_intrinsic
 #endif
 
@@ -85,10 +85,14 @@ int main(int argc, char* argv[]) {
   SDL_Event    event;
   bool         quit = false;
 
+  IF_MODE_BENCHMARK(int iter_cnt = 0;)
+
   SDL_SetRenderDrawColor(app_data.rndr, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderClear(app_data.rndr);
 
   while (!quit) {
+    IF_MODE_BENCHMARK(iter_cnt++; if (iter_cnt >= kBenchmarkIterCnt) break;)
+
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_EVENT_QUIT) {
         quit = true;

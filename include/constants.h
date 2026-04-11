@@ -11,3 +11,5 @@ static const float kYOffset            = kWindowHeight / 2;
 static const float kDefaultScaleFactor = 275.f;
 static const float kScaleFactorDelta   = 50.f;
 static const float kOriginDelta        = 10;
+
+static const int   kBenchmarkIterCnt   = 500;
