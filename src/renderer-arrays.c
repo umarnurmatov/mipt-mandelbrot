@@ -47,8 +47,9 @@ void render_mandelbrot_arrays(SDL_Surface* surface, Transform tr) {
 
   for (float p_y = 0; p_y < kWindowHeight; p_y++) {
     for (float p_x = 0; p_x < kWindowWidth; p_x += 8) {
+
       m256 p0_re = mm256_set1_ps(p_x - kXOffset + tr.origin_x);
-      m256 p0_im = mm256_set1_ps(kYOffset - p_y + tr.origin_y);
+      m256 p0_im = mm256_set1_ps(kYOffset - p_y - tr.origin_y);
 
       p0_re = mm256_add_ps(p0_re, p0_re_inc);
       p0_re = mm256_div_ps(p0_re, sc_fac);
