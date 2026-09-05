@@ -1,10 +1,15 @@
 # PROGRAM CONFIG
-BUILD_DIR    = build
+
+# can redefine build dir
+BUILD_DIR    ?= build
 SRC_DIR      = src
 INCLUDE_DIRS = include
 EXECUTABLE   = mandelbrot.out
 
--include $(SRC_DIR)/sources.mk
+# includes SOURCES variable
+# do not use -include, because it ignores files that could not be found
+include $(SRC_DIR)/sources.mk
+
 OBJS = $(patsubst %.c,$(BUILD_DIR)/%.o,$(notdir $(SOURCES)))
 DEPS = $(patsubst %.o,%.d,$(OBJS))
 
@@ -21,7 +26,7 @@ INCLUDE_DIRS_ALL = $(INCLUDE_DIRS)
 # COMPILER CONFIG
 
 # if not defined by default, than override
-ifeq ($(origin, CC), default) 
+ifeq ($(origin CC), default) 
 	CC = g++
 endif
 
@@ -29,12 +34,12 @@ CPPFLAGS_DEBUG 	 = -D _DEBUG -ggdb3 -O0 -g
 
 CPPFLAGS_RELEASE = -DNDEBUG -O3 -march=native -mavx2 -mavx
 
-CPPFLAGS_ASAN = -fcheck-new -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging -fno-omit-frame-pointer -pie -fPIE -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
+CPPFLAGS_ASAN    = -fcheck-new -fsized-deallocation -fstack-protector -fstrict-overflow -flto-odr-type-merging -fno-omit-frame-pointer -pie -fPIE -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 ifeq "$(TARGET)" "Release"
-CPPFLAGS_TARGET = $(CPPFLAGS_RELEASE)
+	CPPFLAGS_TARGET = $(CPPFLAGS_RELEASE)
 else
-CPPFLAGS_TARGET = $(CPPFLAGS_DEBUG) $(CPPFLAGS_ASAN)
+	CPPFLAGS_TARGET = $(CPPFLAGS_DEBUG) $(CPPFLAGS_ASAN)
 endif
 
 CPPFLAGS_WARNINGS = -Wall -Wextra -Weffc++ -Waggressive-loop-optimizations -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts -Wconditionally-supported -Wconversion -Wctor-dtor-privacy -Wempty-body -Wfloat-equal -Wformat-nonliteral -Wformat-security -Wformat-signedness -Wformat=2 -Winline -Wlogical-op -Wnon-virtual-dtor -Wopenmp-simd -Woverloaded-virtual -Wpacked -Wpointer-arith -Winit-self -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wsuggest-attribute=noreturn -Wsuggest-final-methods -Wsuggest-final-types -Wsuggest-override -Wswitch-default -Wswitch-enum -Wsync-nand -Wundef -Wunreachable-code -Wunused -Wuseless-cast -Wvariadic-macros -Wno-literal-suffix -Wno-missing-field-initializers -Wno-narrowing -Wno-old-style-cast -Wno-varargs -Wstack-protector -Wlarger-than=8192 -Werror=vla -Wstack-usage=8192
@@ -44,16 +49,24 @@ CPPFLAGS_DEFINES = $(addprefix -D,$(DEFINE))
 # because CFLAGS could be origined as external environment variable
 override CFLAGS += $(addprefix -I,$(INCLUDE_DIRS_ALL)) $(CPPFLAGS_WARNINGS) $(CPPFLAGS_DEFINES) $(CPPFLAGS_TARGET)
 
+.PHONY: all
+all: $(BUILD_DIR)/$(EXECUTABLE)
+
 # PROGRAM
 $(BUILD_DIR)/$(EXECUTABLE): $(OBJS)
 	@echo -n Linking $@...
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 	@echo done
 
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJS): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo Building $@...
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $< $(LIBS)
+
+$(DEPS): $(BUILD_DIR)/%.d: $(SRC_DIR)/%.c
+	@mkdir -p $(BUILD_DIR)
+	# just running preprocessor to generate include-dependencies
+	$(CC) -E $(CFLAGS) $< -MM -MT $(@:.d=.o) > $@
 
 .PHONY: run
 run: $(BUILD_DIR)/$(EXECUTABLE)
@@ -63,4 +76,4 @@ run: $(BUILD_DIR)/$(EXECUTABLE)
 clean:
 	rm -rf $(BUILD_DIR)
 
--include $(DEPS)
+include $(DEPS)

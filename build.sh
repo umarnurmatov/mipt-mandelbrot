@@ -1,7 +1,5 @@
 #!/bin/bash
 
-make clean
-
 BENCH_MODE=false
 VERSION=""
 
