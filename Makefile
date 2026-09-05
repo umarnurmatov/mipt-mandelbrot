@@ -49,6 +49,9 @@ CPPFLAGS_DEFINES = $(addprefix -D,$(DEFINE))
 # because CFLAGS could be origined as external environment variable
 override CFLAGS += $(addprefix -I,$(INCLUDE_DIRS_ALL)) $(CPPFLAGS_WARNINGS) $(CPPFLAGS_DEFINES) $(CPPFLAGS_TARGET)
 
+# targets which do not require dependencies
+NODEPS = clean
+
 .PHONY: all
 all: $(BUILD_DIR)/$(EXECUTABLE)
 
@@ -76,4 +79,7 @@ run: $(BUILD_DIR)/$(EXECUTABLE)
 clean:
 	rm -rf $(BUILD_DIR)
 
+# in order to avoid rebuilding deps for NODEPS targets
+ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
 include $(DEPS)
+endif
